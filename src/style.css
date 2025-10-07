@@ -1,0 +1,70 @@
+/* Variáveis CSS para tema */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-card: #ffffff;
+  --text-primary: #213547;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Variáveis para tema escuro */
+body.dark {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #242424;
+  --bg-card: #2d2d2d;
+  --text-primary: rgba(255, 255, 255, 0.87);
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --border-color: #404040;
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Reset global */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base do body */
+body {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Layout do app */
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+/* Estilos base para inputs e botões */
+input,
+select,
+button {
+  font-family: inherit;
+  font-size: inherit;
+  transition: all 0.3s ease;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-weight: 500;
+}
+
+/* Responsivo base */
+@media (max-width: 768px) {
+  #app {
+    padding: 1rem;
+  }
+}
