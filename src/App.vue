@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
+import CharacterModal from "./components/CharacterModal.vue";
 import axios from "axios";
 
 const isDarkMode = ref(true);
@@ -13,6 +14,8 @@ const currentPage = ref(1);
 const totalPages = ref(0);
 const totalCharacters = ref(0);
 const paginationInfo = ref({});
+const selectedCharacter = ref(null);
+const isModalOpen = ref(false);
 
 const toggleTheme = () => {
   isDarkMode.value = !isDarkMode.value;
@@ -37,6 +40,18 @@ watch(isDarkMode, (newValue) => {
   applyTheme(newValue);
   saveThemePreference(newValue);
 });
+
+const openModal = (character) => {
+  selectedCharacter.value = character;
+  isModalOpen.value = true;
+};
+
+const closeCharacterModal = () => {
+  isModalOpen.value = false;
+  setTimeout(() => {
+    selectedCharacter.value = null;
+  }, 300);
+};
 
 const fetchCharacters = async (page = 1) => {
   loading.value = true;
@@ -172,6 +187,7 @@ onMounted(() => {
         v-for="character in filteredCharacters"
         :key="character.id"
         class="character-card"
+        @click="openModal(character)"
       >
         <img :src="character.image" :alt="character.name" />
         <h3>{{ character.name }}</h3>
@@ -210,6 +226,12 @@ onMounted(() => {
         </button>
       </div>
     </div>
+
+    <CharacterModal
+      :character="selectedCharacter"
+      :isOpen="isModalOpen"
+      @close="closeCharacterModal"
+    />
   </div>
 </template>
 
@@ -284,6 +306,7 @@ select:focus {
 .filters button {
   background-color: var(--bg-secondary);
   font-weight: 500;
+  height: 50px;
 }
 
 .filters button:hover {
