@@ -298,6 +298,20 @@ onMounted(() => {
   text-align: center;
   margin: 50px 0px 50px 0px;
   color: #02b0c7;
+  text-shadow: 0 0 5px rgba(2, 176, 199, 0.5), 0 0 10px rgba(2, 176, 199, 0.4),
+    0 0 15px rgba(2, 176, 199, 0.3);
+  animation: glow 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 3px rgba(2, 176, 199, 0.4), 0 0 6px rgba(2, 176, 199, 0.3),
+      0 0 10px rgba(2, 176, 199, 0.2);
+  }
+  to {
+    text-shadow: 0 0 8px rgba(2, 176, 199, 0.6), 0 0 15px rgba(2, 176, 199, 0.4),
+      0 0 20px rgba(2, 176, 199, 0.3);
+  }
 }
 
 /* Tema toggle */
