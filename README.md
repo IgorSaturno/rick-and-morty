@@ -271,4 +271,4 @@ Este projeto está sob a licença MIT. Sinta-se livre para usar, modificar e dis
 
 ---
 
-**Feito com ❤️ e Vue 3**
+- [Projeto online](https://rick-and-morty-character-explorer-vue.netlify.app/) 🖱️
