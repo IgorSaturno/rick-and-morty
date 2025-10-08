@@ -9,6 +9,7 @@ const loading = ref(true);
 const searchTerm = ref("");
 const selectedStatus = ref("");
 const selectedSpecies = ref("");
+const searchTimeout = ref(null);
 
 const currentPage = ref(1);
 const totalPages = ref(0);
@@ -116,6 +117,7 @@ const clearFilters = () => {
   selectedStatus.value = "";
   selectedSpecies.value = "";
   currentPage.value = 1;
+  localStorage.removeItem("rickAndMortyFilters");
   fetchCharacters(1);
 };
 
@@ -140,15 +142,53 @@ const getVisiblePages = () => {
   return pages;
 };
 
+const saveFilters = () => {
+  const filters = {
+    searchTerm: searchTerm.value,
+    selectedStatus: selectedStatus.value,
+    selectedSpecies: selectedSpecies.value,
+  };
+  localStorage.setItem("rickAndMortyFilters", JSON.stringify(filters));
+};
+
+const loadFilters = () => {
+  const saved = localStorage.getItem("rickAndMortyFilters");
+  if (saved) {
+    try {
+      const filters = JSON.parse(saved);
+      searchTerm.value = filters.searchTerm || "";
+      selectedStatus.value = filters.selectedStatus || "";
+      selectedSpecies.value = filters.selectedSpecies || "";
+    } catch (error) {
+      console.error("Erro ao carregar filtros:", error);
+    }
+  }
+};
+
 watch([searchTerm, selectedStatus, selectedSpecies], () => {
+  saveFilters();
+});
+
+watch(searchTerm, () => {
+  if (searchTimeout.value) {
+    clearTimeout(searchTimeout.value);
+  }
+  searchTimeout.value = setTimeout(() => {
+    currentPage.value = 1;
+    fetchCharacters(1);
+  }, 500);
+});
+
+watch([selectedStatus, selectedSpecies], () => {
   currentPage.value = 1;
   fetchCharacters(1);
 });
 
 onMounted(() => {
-  fetchCharacters();
   loadThemePreference();
   applyTheme(isDarkMode.value);
+  loadFilters();
+  fetchCharacters();
 });
 </script>
 
@@ -157,7 +197,7 @@ onMounted(() => {
     <button @click="toggleTheme" class="theme-button">
       {{ isDarkMode ? "☀️" : "🌙" }}
     </button>
-    <h1>Rick and Morty Characters</h1>
+    <h1 class="title">Rick and Morty Characters</h1>
 
     <input v-model="searchTerm" type="text" placeholder="Search character..." />
 
@@ -180,7 +220,18 @@ onMounted(() => {
 
       <button @click="clearFilters">Clear Filters</button>
     </div>
-    <div v-if="loading">Loading...</div>
+
+    <div v-if="loading" class="loading">
+      <div class="loading-spinner"></div>
+      <p>Carregando personagens...</p>
+    </div>
+
+    <div v-else-if="!loading && characters.length === 0" class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <h2>Nenhum personagem encontrado</h2>
+      <p>Tente ajustar os filtros ou buscar por outro termo</p>
+      <button @click="clearFilters" class="empty-button">Limpar Filtros</button>
+    </div>
 
     <div v-else class="characters-grid">
       <div
@@ -243,6 +294,12 @@ onMounted(() => {
   padding: 20px;
 }
 
+.title {
+  text-align: center;
+  margin: 50px 0px 50px 0px;
+  color: #02b0c7;
+}
+
 /* Tema toggle */
 .theme-toggle {
   position: fixed;
@@ -260,6 +317,9 @@ onMounted(() => {
   color: var(--text-primary);
   font-size: 20px;
   box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .theme-button:hover {
@@ -341,7 +401,7 @@ select:focus {
 
 .character-card img {
   width: 100%;
-  height: 220px;
+  height: auto;
   object-fit: cover;
   border-radius: 8px;
   margin-bottom: 15px;
@@ -361,9 +421,28 @@ select:focus {
 /* Loading */
 .loading {
   text-align: center;
-  padding: 50px;
+  padding: 80px 20px;
   color: var(--text-secondary);
-  font-size: 1.2em;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 20px;
+  border: 4px solid var(--border-color);
+  border-top-color: #646cff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading p {
+  font-size: 1.1em;
 }
 
 /* Paginação */
@@ -431,6 +510,45 @@ select:focus {
   background-color: #646cff;
   color: white;
   border-color: #646cff;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  font-size: 80px;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.empty-state h2 {
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  font-size: 1.8em;
+}
+
+.empty-state p {
+  margin-bottom: 25px;
+  font-size: 1.1em;
+}
+
+.empty-button {
+  padding: 12px 30px;
+  background-color: #646cff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.empty-button:hover {
+  background-color: #535bf2;
+  transform: translateY(-2px);
 }
 
 /* Responsivo específico */

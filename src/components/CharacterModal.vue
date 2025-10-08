@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from "vue";
+import { computed, onMounted, onUnmounted } from "vue";
 
 const props = defineProps({
   character: {
@@ -21,9 +21,19 @@ const closeModal = () => {
 
 const hasCharacter = computed(() => props.character !== null);
 
-const stopPropagation = (event) => {
-  event.stopPropagation();
+const handleKeydown = (event) => {
+  if (event.key === "Escape" && props.isOpen) {
+    closeModal();
+  }
 };
+
+onMounted(() => {
+  document.addEventListener("keydown", handleKeydown);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("keydown", handleKeydown);
+});
 </script>
 
 <template>
